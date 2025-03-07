@@ -1,53 +1,65 @@
 import streamlit as st
 from langchain.agents import Tool, initialize_agent
-from langchain.chat_models import ChatOpenAI
+from langchain_community.chat_models import ChatOpenAI
 from langchain.schema import SystemMessage, HumanMessage
 from dotenv import load_dotenv
+import os
 
 load_dotenv()
 
+# 環境変数からAPIキーを取得
+openai_api_key = os.getenv("OPENAI_API_KEY")
+
 # LLMの初期化（temperature=0で安定した回答）
-llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
+llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0, openai_api_key=openai_api_key)
 
 # 各専門家のツール関数を定義
-def programming_expert_tool(query):
+def get_programming_expert_advice(query: str) -> str:
     """プログラミングに関する質問に回答するツール関数"""
-    system_prompt = "あなたは優秀なプログラミング専門家です。技術的な質問に対して詳細かつ正確に回答してください。"
+    system_template = """
+    あなたは優秀なプログラミング専門家です。技術的な質問に対して詳細かつ正確に回答してください。
+    """
     messages = [
-        SystemMessage(content=system_prompt),
+        SystemMessage(content=system_template),
         HumanMessage(content=query)
     ]
     response = llm(messages)
     return response.content
 
-def medical_expert_tool(query):
+programming_expert_tool = Tool.from_function(
+    func=get_programming_expert_advice,
+    name="プログラミング専門家",
+    description="プログラミングに関する質問に日本語で回答します。"
+)
+
+def get_medical_expert_advice(query: str) -> str:
     """医療に関する質問に回答するツール関数"""
-    system_prompt = "あなたは優秀な医療専門家です。医療に関する質問に対して専門的かつ正確に回答してください。"
+    system_template = """
+    あなたは優秀な医療専門家です。医療に関する質問に対して専門的かつ正確に回答してください。
+    """
     messages = [
-        SystemMessage(content=system_prompt),
+        SystemMessage(content=system_template),
         HumanMessage(content=query)
     ]
     response = llm(messages)
     return response.content
+
+medical_expert_tool = Tool.from_function(
+    func=get_medical_expert_advice,
+    name="医療専門家",
+    description="医療に関する質問に日本語で回答します。"
+)
 
 # Toolオブジェクトのリストを作成
 tools = [
-    Tool(
-        name="ProgrammingExpert",
-        func=programming_expert_tool,
-        description="プログラミングに関する質問に日本語で回答します。"
-    ),
-    Tool(
-        name="MedicalExpert",
-        func=medical_expert_tool,
-        description="医療に関する質問に日本語で回答します。"
-    )
+    programming_expert_tool,
+    medical_expert_tool
 ]
 
 # Agentsの初期化
 agent = initialize_agent(tools, llm, agent="zero-shot-react-description", verbose=True)
 
-def get_llm_response(input_text, expert_choice) :
+def get_llm_response(input_text: str, expert_choice: str) -> str:
     """
     入力テキストと専門家の選択値に応じた問い合わせを、
     LangChain AgentのToolを利用してLLMからの回答を取得する関数です。
