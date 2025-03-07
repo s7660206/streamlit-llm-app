@@ -2,6 +2,8 @@ import streamlit as st
 from langchain.agents import Tool, initialize_agent
 from langchain_community.chat_models import ChatOpenAI
 from langchain.schema import SystemMessage, HumanMessage
+from langchain.chat_models import ChatOpenAI
+from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder 
 from dotenv import load_dotenv
 import os
 
