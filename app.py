@@ -1,4 +1,5 @@
 import streamlit as st
+from openai import OpenAI
 from langchain_openai import ChatOpenAI
 from langchain.agents import Tool, initialize_agent
 from langchain_community.chat_models import ChatOpenAI
