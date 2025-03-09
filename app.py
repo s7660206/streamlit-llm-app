@@ -1,4 +1,6 @@
 import streamlit as st
+from openai import OpenAI
+from langchain_openai import ChatOpenAI
 from langchain.agents import Tool, initialize_agent
 from langchain_community.chat_models import ChatOpenAI
 from langchain.schema import SystemMessage, HumanMessage
@@ -16,7 +18,7 @@ load_dotenv()
 llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
 
 # 各専門家のツール関数を定義
-def get_programming_expert_advice(query: str) -> str:
+def get_programming_expert_advice(query):
     """プログラミングに関する質問に回答するツール関数"""
     system_template = """
     あなたは優秀なプログラミング専門家です。技術的な質問に対して詳細かつ正確に回答してください。
@@ -34,7 +36,7 @@ programming_expert_tool = Tool.from_function(
     description="プログラミングに関する質問に日本語で回答します。"
 )
 
-def get_medical_expert_advice(query: str) -> str:
+def get_medical_expert_advice(query):
     """医療に関する質問に回答するツール関数"""
     system_template = """
     あなたは優秀な医療専門家です。医療に関する質問に対して専門的かつ正確に回答してください。
