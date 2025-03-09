@@ -11,11 +11,8 @@ import os
 
 load_dotenv()
 
-# 環境変数からAPIキーを取得
-openai_api_key = st.secrets["OPENAI_API_KEY"]
-
 # LLMの初期化（temperature=0で安定した回答）
-llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0, openai_api_key=openai_api_key)
+llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
 
 # 各専門家のツール関数を定義
 def get_programming_expert_advice(query):
