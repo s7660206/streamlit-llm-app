@@ -21,8 +21,6 @@ llm = ChatOpenAI(
     openai_api_key=openai_api_key
 )
 
-st.write("APIキーの先頭4文字:", openai_api_key[:4])
-
 # 各専門家のツール関数を定義
 def get_programming_expert_advice(query):
     """プログラミングに関する質問に回答するツール関数"""
